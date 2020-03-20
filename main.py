@@ -27,7 +27,7 @@ def get_info_table():
     for tr in table.findAll('tr'):
         for td in tr.findAll('td'):
             try:
-                tmp.append(td.find(text=True).strip())
+                tmp.append(td.find(text=True).strip().lower().replace(' ','_'))
             except Exception:
                 tmp.append(td.find(text=True))
                 pass
@@ -40,6 +40,14 @@ def get_info_table():
         entries.append(dict(zip(keys, tmp[s:e])))
         s += 9
         e += 9
+    return entries
+
+
+def get_country(country, entries):
+    for entry in entries:
+        if country.lower() == entry['Country']:
+            return json.dumps(entry)
+    return json.dumps(f'Unable to find {country}')
 
 
 # check for args passed
@@ -47,6 +55,14 @@ if len(sys.argv) > 1:
     args = sys.argv[1:]
     if args[0] == "updates":
         print(get_updates())
+    elif args[0] == "show":
+        entries = get_info_table()
+        if args[1] == "all":
+            print(json.dumps(entries))
+        else:
+            print(get_country(args[1], entries))
 else:
     print("No argument's passed, what do i do? ")
+    
+    
 
