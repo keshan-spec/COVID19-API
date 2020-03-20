@@ -1,7 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
+import sys
 
 URL = 'https://www.worldometers.info/coronavirus/'
+
+# check for args passed
+if len(sys.argv) > 1:
+    args = sys.argv[1:]
 
 
 def run():
@@ -40,4 +45,4 @@ def get_info_table():
         e += 9
 
 
-get_info_table()
+# get_info_table()
