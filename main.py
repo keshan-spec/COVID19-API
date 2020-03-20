@@ -50,6 +50,22 @@ def get_country(country, entries):
     return json.dumps(f'Unable to find {country}')
 
 
+def get_stats(opt, entries):
+    opts = {'death': 'Total Deaths',
+            'recovered': 'Total Recovered',
+            'cases': 'Total Cases'}
+    if opt not in opts.keys():
+        return json.dumps('Invalid option')
+
+    key = opts[opt]
+    key_vals = {}
+    for entry in entries:
+        if entry[key]:
+            key_vals[entry['Country']] = int(entry[key].replace(',',''))
+    max_key = max(key_vals, key=key_vals.get)
+    return json.dumps({max_key: key_vals[max_key]})
+
+
 # check for args passed
 if len(sys.argv) > 1:
     args = sys.argv[1:]
@@ -61,6 +77,9 @@ if len(sys.argv) > 1:
             print(json.dumps(entries))
         else:
             print(get_country(args[1], entries))
+    elif args[0] == "stats":
+        entries = get_info_table()
+        print(get_stats(args[1], entries))
 else:
     print("No argument's passed, what do i do? ")
     
