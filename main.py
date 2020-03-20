@@ -1,12 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 import sys
+import json
 
 URL = 'https://www.worldometers.info/coronavirus/'
-
-# check for args passed
-if len(sys.argv) > 1:
-    args = sys.argv[1:]
 
 
 def run():
@@ -17,7 +14,7 @@ def get_updates():
     soup = run()
     infect_count = soup.find_all("div", {"class": "maincounter-number"})
     infect_count = [i.find('span').findAll(text=True)[0].strip() for i in infect_count]
-    return {"Infected": infect_count[0], "Deaths": infect_count[1], "Recovered": infect_count[2]}
+    return json.dumps({"Infected": infect_count[0], "Deaths": infect_count[1], "Recovered": infect_count[2]})
 
 
 def get_info_table():
@@ -45,4 +42,11 @@ def get_info_table():
         e += 9
 
 
-# get_info_table()
+# check for args passed
+if len(sys.argv) > 1:
+    args = sys.argv[1:]
+    if args[0] == "updates":
+        print(get_updates())
+else:
+    print("No argument's passed, what do i do? ")
+
