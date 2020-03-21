@@ -36,7 +36,7 @@ def get_info_table():
     entries = []
 
     # Loop through the temp list and make a dict with every 9 items
-    for x in range(len(tmp) // 9):
+    for _ in range(len(tmp) // 9):
         entries.append(dict(zip(keys, tmp[s:e])))
         s += 9
         e += 9
