@@ -2,8 +2,6 @@ var express = require('express');
 var app = express();
 const { spawn } = require('child_process');
 
-
-
 // routes
 app.get('/', (req, res) => { res.send('Corona Live updates API') })
 
@@ -52,4 +50,10 @@ app.get("/show/stats/:opt", (req, res) => {
     });
 })
 
-app.listen(3000)
+// Server on port : 3000
+var server = app.listen(3000)
+
+// Close on termination 
+process.on('SIGTERM', () => {
+    server.close()
+})
