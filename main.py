@@ -22,24 +22,26 @@ def get_info_table():
     table = soup.find('table', {'id': 'main_table_countries_today'})
     tmp = []
     keys = ['Country', 'Total Cases', 'New Cases', 'Total Deaths', 'New Deaths',
-            'Total Recovered', 'Active Cases', 'Serious', 'Tot']  # the keys of the table
+            'Total Recovered', 'Active Cases', 'Serious', 'Tot cases', 'Tot deaths']  # the keys of the table
 
-    for tr in table.findAll('tr'):
+    for tr in table.findAll('tr')[1:-1]:
         for td in tr.findAll('td'):
             try:
-                tmp.append(td.find(text=True).strip().lower().replace(' ','_'))
-            except Exception:
+                tmp.append(td.find(text=True).strip().lower().replace('.','').replace('-', '').replace(' ', '_'))
+            except Exception as e:
                 tmp.append(td.find(text=True))
                 pass
-    tmp.pop()  # pop the last item , that's just 'total :'
-    s, e = 0, 9
+
+    s, e = 0, 10
     entries = []
 
     # Loop through the temp list and make a dict with every 9 items
     for _ in range(len(tmp) // 9):
-        entries.append(dict(zip(keys, tmp[s:e])))
-        s += 9
-        e += 9
+        d = dict(zip(keys, tmp[s:e]))
+        if d:
+            entries.append(d)
+        s += 10
+        e += 10
     return entries
 
 
@@ -82,6 +84,6 @@ if len(sys.argv) > 1:
         print(get_stats(args[1], entries))
 else:
     print("No argument's passed, what do i do? ")
-    
+
     
 

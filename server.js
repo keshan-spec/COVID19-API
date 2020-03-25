@@ -2,6 +2,8 @@ var express = require('express');
 var app = express();
 const { spawn } = require('child_process');
 
+
+
 // routes
 app.get('/', (req, res) => { res.send('Corona Live updates API') })
 
@@ -49,9 +51,5 @@ app.get("/show/stats/:opt", (req, res) => {
         res.status(400).send("There's been an error, I apologise");
     });
 })
-
-
-
-
 
 app.listen(3000)
