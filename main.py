@@ -22,26 +22,29 @@ def get_info_table():
     table = soup.find('table', {'id': 'main_table_countries_today'})
     tmp = []
     keys = ['Country', 'Total Cases', 'New Cases', 'Total Deaths', 'New Deaths',
-            'Total Recovered', 'Active Cases', 'Serious', 'Tot cases', 'Tot deaths']  # the keys of the table
+            'Total Recovered', 'Active Cases', 'Serious', 'Tot cases 1M Pop', 'Tot deaths 1M Pop', 'Total tests', 'Tests 1M pop']  # the keys of the table
 
-    for tr in table.findAll('tr')[1:-1]:
-        for td in tr.findAll('td'):
-            try:
-                tmp.append(td.find(text=True).strip().lower().replace('.','').replace('-', '').replace(' ', '_'))
-            except Exception as e:
-                tmp.append(td.find(text=True))
-                pass
+    for tr in table.findAll('tr')[:-1]:
+        if tr.has_attr('data-continent') == False:
+            for td in tr.findAll('td'):
+                if td.has_attr('data-continent') == False:
+                    try:
+                        tmp.append(td.find(text=True).strip().lower().replace('.','').replace('-', '').replace(' ', '_'))
+                    except Exception as e:
+                        tmp.append(td.find(text=True))
+                        pass
 
-    s, e = 0, 10
+    key_len = len(keys)
+    s, e = 0, key_len
     entries = []
 
     # Loop through the temp list and make a dict with every 9 items
-    for _ in range(len(tmp) // 9):
+    for _ in range(len(tmp) // len(keys)):
         d = dict(zip(keys, tmp[s:e]))
         if d:
             entries.append(d)
-        s += 10
-        e += 10
+        s += len(keys)
+        e += len(keys)
     return entries
 
 
