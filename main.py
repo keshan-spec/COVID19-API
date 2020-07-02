@@ -22,11 +22,11 @@ def get_info_table():
     table = soup.find('table', {'id': 'main_table_countries_today'})
     tmp = []
     keys = ['Country', 'Total Cases', 'New Cases', 'Total Deaths', 'New Deaths',
-            'Total Recovered', 'Active Cases', 'Serious', 'Tot cases 1M Pop', 'Tot deaths 1M Pop', 'Total tests', 'Tests 1M pop']  # the keys of the table
+            'Total Recovered', 'New Recovered','Active Cases']  # the keys of the table
 
     for tr in table.findAll('tr')[:-1]:
         if tr.has_attr('data-continent') == False:
-            for td in tr.findAll('td'):
+            for td in tr.findAll('td')[1:9]:
                 if td.has_attr('data-continent') == False:
                     try:
                         tmp.append(td.find(text=True).strip().lower().replace('.','').replace('-', '').replace(' ', '_'))
@@ -34,8 +34,7 @@ def get_info_table():
                         tmp.append(td.find(text=True))
                         pass
 
-    key_len = len(keys)
-    s, e = 0, key_len
+    s, e = 0, len(keys)
     entries = []
 
     # Loop through the temp list and make a dict with every 9 items
@@ -87,6 +86,7 @@ if len(sys.argv) > 1:
         print(get_stats(args[1], entries))
 else:
     print("No argument's passed, what do i do? ")
-
+    entries = get_info_table()
+    print(json.dumps(entries[0:2], indent=2))
     
 
