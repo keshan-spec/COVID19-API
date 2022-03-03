@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import sys
 import json
 
-URL = 'https://www.worldometers.info/coronavirus/'
+URL = "https://www.worldometers.info/coronavirus/"
 
 
 def run():
@@ -13,23 +13,44 @@ def run():
 def get_updates():
     soup = run()
     infect_count = soup.find_all("div", {"class": "maincounter-number"})
-    infect_count = [i.find('span').findAll(text=True)[0].strip() for i in infect_count]
-    return json.dumps({"Infected": infect_count[0], "Deaths": infect_count[1], "Recovered": infect_count[2]})
+    infect_count = [i.find("span").findAll(text=True)[0].strip() for i in infect_count]
+    return json.dumps(
+        {
+            "Infected": infect_count[0],
+            "Deaths": infect_count[1],
+            "Recovered": infect_count[2],
+        }
+    )
 
 
 def get_info_table():
     soup = run()
-    table = soup.find('table', {'id': 'main_table_countries_today'})
+    table = soup.find("table", {"id": "main_table_countries_today"})
     tmp = []
-    keys = ['Country', 'Total Cases', 'New Cases', 'Total Deaths', 'New Deaths',
-            'Total Recovered', 'New Recovered','Active Cases']  # the keys of the table
+    keys = [
+        "Country",
+        "Total Cases",
+        "New Cases",
+        "Total Deaths",
+        "New Deaths",
+        "Total Recovered",
+        "New Recovered",
+        "Active Cases",
+    ]  # the keys of the table
 
-    for tr in table.findAll('tr')[:-1]:
-        if tr.has_attr('data-continent') == False:
-            for td in tr.findAll('td')[1:9]:
-                if td.has_attr('data-continent') == False:
+    for tr in table.findAll("tr")[:-1]:
+        if tr.has_attr("data-continent") == False:
+            for td in tr.findAll("td")[1:9]:
+                if td.has_attr("data-continent") == False:
                     try:
-                        tmp.append(td.find(text=True).strip().lower().replace('.','').replace('-', '').replace(' ', '_'))
+                        tmp.append(
+                            td.find(text=True)
+                            .strip()
+                            .lower()
+                            .replace(".", "")
+                            .replace("-", "")
+                            .replace(" ", "_")
+                        )
                     except Exception as e:
                         tmp.append(td.find(text=True))
                         pass
@@ -49,23 +70,27 @@ def get_info_table():
 
 def get_country(country, entries):
     for entry in entries:
-        if country.lower() == entry['Country']:
+        if country.lower() == entry["Country"]:
             return json.dumps(entry)
-    return json.dumps(f'Unable to find {country}')
+    return json.dumps(f"Unable to find {country}")
 
 
 def get_stats(opt, entries):
-    opts = {'death': 'Total Deaths',
-            'recovered': 'Total Recovered',
-            'cases': 'Total Cases'}
+    opts = {
+        "death": "Total Deaths",
+        "recovered": "Total Recovered",
+        "cases": "Total Cases",
+    }
     if opt not in opts.keys():
-        return json.dumps('Invalid option')
+        return json.dumps({"Invalid option": opts})
 
     key = opts[opt]
     key_vals = {}
     for entry in entries:
         if entry[key]:
-            key_vals[entry['Country']] = int(entry[key].replace(',',''))
+            if entry["Country"] != "world":
+                key_vals[entry["Country"]] = int(entry[key].replace(",", ""))
+
     max_key = max(key_vals, key=key_vals.get)
     return json.dumps({max_key: key_vals[max_key]})
 
@@ -88,5 +113,3 @@ else:
     print("No argument's passed, what do i do? ")
     entries = get_info_table()
     print(json.dumps(entries[0:2], indent=2))
-    
-
